@@ -17,7 +17,7 @@ void cargaLaberinto (char *labFile, char labArray[N][N]) {
 */
 int juega (char labArray[N][N]) {
     int inicio[1][2] = {21, 0};
-    int fin[1][2] = {, 0};
+    int fin[1][2] = {5, 99};
 
 }
 
