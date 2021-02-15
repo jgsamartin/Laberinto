@@ -16,6 +16,8 @@ void cargaLaberinto (char *labFile, char labArray[N][N]) {
     Función que crea resuelve el laberinto con hilos
 */
 int juega (char labArray[N][N]) {
+    int inicio[1][2] = {21, 0};
+    int fin[1][2] = {, 0};
 
 }
 
@@ -23,7 +25,7 @@ int juega (char labArray[N][N]) {
 int main (char argc, char * argv[]) {
     /* Matriz que almacena el laberinto */
     char laberinto[N][N];
-    
+
     if (!argc) {
         cout << "¡Se necesita cargar un laberinto para empezar!" << endl;
     } else {
