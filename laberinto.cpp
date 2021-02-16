@@ -34,7 +34,7 @@ void cargaLaberinto (char *labFile, char labArray[M][N]) {
         }
     }
     else {
-        cout << "No existe";
+        cout << "No existe" << endl;
     }
 
 }
@@ -42,28 +42,35 @@ void cargaLaberinto (char *labFile, char labArray[M][N]) {
 /*
     Función que comprueba si la casilla seleccionada es o no accesible
 */
-int esAccesible (char labArray[N][N], int x, int y) {
-    int n = 25;
-    int m = 100;
-    return labArray[x][y] != ROCA && labArray[x][y] != INICIO && labArray[x][y] != CAMINO && x >= 0 && y >= 0 && x < n && y < m;
+int esAccesible (char labArray[M][N], int x, int y) {
+    int n = 100;
+    int m = 25;
+    /*cout <<(labArray[x][y] != ROCA) << endl;
+    cout <<(labArray[x][y] != INICIO)<< endl;
+    cout << (labArray[x][y] != CAMINO)<< endl;
+    cout << x<< endl;
+    cout << y<< endl;*/
+    return labArray[x][y] != ROCA && labArray[x][y] != CAMINO && x >= 0 && y >= 0 && x < m && y < n;
 }
 
 /*
     Función que comprueba si la casilla seleccionada es o no el final
 */
-int esFinal (char labArray[N][N], int x, int y) {
+int esFinal (char labArray[M][N], int x, int y) {
     return labArray[x][y] == FIN;
 }
 
 /*
     Se mueve desde la posición (x,y) a todas las casillas adyacentes posibles
 */
-int mueve (int x, int y) {
+int mueve (char labArray[M][N], int x, int y) {
 
-    if (esFinal(x,y)) {
+    //cout << "(" << x << "," << y << ")" << endl;
+
+    if (esFinal(labArray,x,y)) {
         return 1; 
     }
-    else if (!esAccesible(x,y) ) {
+    else if (!esAccesible(labArray,x,y) ) {
         return 0;
     } 
     else {
@@ -72,11 +79,12 @@ int mueve (int x, int y) {
         pasos++;
 
         // --- Si alguna de las casillas está en el camino de salida, hemos acertado
-        if (mueve(x+1, y) ||
-            mueve(x, y+1) ||
-            mueve(x-1, y) ||
-            mueve(x, y-1)) {
-                cout << "En la posición número" << pasos <<", se pasa por el punto: (" << x << "," << y << ")" << endl;
+        if (mueve(labArray, x+1, y) ||
+            mueve(labArray, x, y+1) ||
+            mueve(labArray, x-1, y) ||
+            mueve(labArray, x, y-1)) {
+                //cout << "En la posición número" << pasos <<", se pasa por el punto: (" << x << "," << y << ")" << endl;
+                cout << pasos << endl;
                 return 1;
         } else {
             labArray[x][y] = HUECO;
@@ -89,7 +97,7 @@ int mueve (int x, int y) {
 /*
     Función que resuelve el laberinto
 */
-int juega (char labArray[N][N]) {
+int juega (char labArray[M][N]) {
     int inicio[2] = {21, 0};
     int fin[2] = {5, 99};
 
@@ -97,7 +105,13 @@ int juega (char labArray[N][N]) {
     int j = inicio[1];
 
     // --- Desde la posición inicial, se mueve
-    mueve (i,j);
+    if(mueve (labArray,i,j)) {
+        cout << "Victoria" << endl;
+        return 1;
+    } else {
+        cout << "Derrota" << endl;
+        return 0;
+    }
 }
 
 /* Main */
@@ -114,14 +128,16 @@ int main (char argc, char * argv[]) {
         cargaLaberinto (name, laberinto);
     }
 
+    juega(laberinto);
+
     /* SACAR LABERINTO POR PANTALLA
     for (int i=0; i<M; i++){
         for (int j=0; j<N; j++){
             cout << laberinto[i][j];
         }
         cout << endl;
-    }
-    */
+    }*/
+    
 
    return 0;
 
