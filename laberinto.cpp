@@ -5,11 +5,8 @@
 # include <cstring>
 using namespace std;
 
-<<<<<<< HEAD
 # define M 25
 # define N 100
-=======
-# define N 100          // Tamaño máximo del laberinto
 # define ROCA '#'        // Símbolo de la roca
 # define INICIO 'I'      // Carácter de inicio
 # define FIN 'O'         // Carácter de fin
@@ -17,7 +14,6 @@ using namespace std;
 # define HUECO 'C'       // Carácter para indicar que esa casilla tiene un hueco (se puede pasar por ella)
 
 int pasos = 0;
->>>>>>> ed2fbe3d3b925f4c573a0aacb68d0c448e4dedbf
 
 /*
     Función para leer el archivo txt 
