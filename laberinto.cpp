@@ -43,9 +43,20 @@ void cargaLaberinto (char *labFile, char labArray[M][N]) {
     Función que comprueba si la casilla seleccionada es o no accesible
 */
 int esAccesible (char labArray[M][N], int x, int y) {
+<<<<<<< Updated upstream
     int n = 100;
     int m = 25;
     return labArray[x][y] != ROCA && labArray[x][y] != CAMINO && x >= 0 && y >= 0 && x < m && y < n;
+=======
+    //int n = 100;
+    //int m = 25;
+    /*cout <<(labArray[x][y] != ROCA) << endl;
+    cout <<(labArray[x][y] != INICIO)<< endl;
+    cout << (labArray[x][y] != CAMINO)<< endl;
+    cout << x<< endl;
+    cout << y<< endl;*/
+    return labArray[x][y] != ROCA && labArray[x][y] != CAMINO && x >= 0 && y >= 0 && x < M && y < N;
+>>>>>>> Stashed changes
 }
 
 /*
@@ -61,6 +72,7 @@ int esFinal (char labArray[M][N], int x, int y) {
 int mueve (char labArray[M][N], int x, int y) {
 
     if (esFinal(labArray,x,y)) {
+        cout << pasos << endl;
         return 1; 
     }
     else if (!esAccesible(labArray,x,y) ) {
@@ -76,8 +88,11 @@ int mueve (char labArray[M][N], int x, int y) {
             mueve(labArray, x-1, y) ||
             mueve(labArray, x, y-1)) {
                 //cout << "En la posición número" << pasos <<", se pasa por el punto: (" << x << "," << y << ")" << endl;
+<<<<<<< Updated upstream
                 pasos++;
                 //cout << pasos << endl;
+=======
+>>>>>>> Stashed changes
                 return 1;
         } else {
             labArray[x][y] = HUECO;
@@ -91,8 +106,19 @@ int mueve (char labArray[M][N], int x, int y) {
     Función que resuelve el laberinto
 */
 int juega (char labArray[M][N]) {
-    int inicio[2] = {21, 0};
-    int fin[2] = {5, 99};
+
+    int m = 0, inicio[2], fin[2];
+    inicio[1] = 0;
+    fin[1] = N-1;
+    
+    while(m<M){
+        if (labArray[m][inicio[1]] == INICIO) inicio[0] = m;
+        if (labArray[m][fin[1]] == FIN) fin[0] = m;
+        m++;
+    }
+
+    cout << "Inicio : " << inicio[0]+1 << "," << inicio[1]+1 << endl;
+    cout << "Fin : " << fin[0]+1 << "," << fin[1]+1 << endl;
 
     int i = inicio[0];
     int j = inicio[1];
@@ -131,7 +157,6 @@ int main (char argc, char * argv[]) {
         cout << endl;
     }
     
-
    return 0;
 
 }
