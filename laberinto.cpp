@@ -11,7 +11,7 @@ using namespace std;
 # define INICIO 'I'      // Carácter de inicio
 # define FIN 'O'         // Carácter de fin
 # define CAMINO 'C'      // Carácter para indicar si se ha pasado por ahí
-# define HUECO 'C'       // Carácter para indicar que esa casilla tiene un hueco (se puede pasar por ella)
+# define HUECO ' '       // Carácter para indicar que esa casilla tiene un hueco (se puede pasar por ella)
 
 int pasos = 0;
 
@@ -45,11 +45,6 @@ void cargaLaberinto (char *labFile, char labArray[M][N]) {
 int esAccesible (char labArray[M][N], int x, int y) {
     int n = 100;
     int m = 25;
-    /*cout <<(labArray[x][y] != ROCA) << endl;
-    cout <<(labArray[x][y] != INICIO)<< endl;
-    cout << (labArray[x][y] != CAMINO)<< endl;
-    cout << x<< endl;
-    cout << y<< endl;*/
     return labArray[x][y] != ROCA && labArray[x][y] != CAMINO && x >= 0 && y >= 0 && x < m && y < n;
 }
 
@@ -65,8 +60,6 @@ int esFinal (char labArray[M][N], int x, int y) {
 */
 int mueve (char labArray[M][N], int x, int y) {
 
-    //cout << "(" << x << "," << y << ")" << endl;
-
     if (esFinal(labArray,x,y)) {
         return 1; 
     }
@@ -76,7 +69,6 @@ int mueve (char labArray[M][N], int x, int y) {
     else {
         // --- Marcamos que hemos pasado por la casilla
         labArray[x][y] = CAMINO;
-        pasos++;
 
         // --- Si alguna de las casillas está en el camino de salida, hemos acertado
         if (mueve(labArray, x+1, y) ||
@@ -84,11 +76,12 @@ int mueve (char labArray[M][N], int x, int y) {
             mueve(labArray, x-1, y) ||
             mueve(labArray, x, y-1)) {
                 //cout << "En la posición número" << pasos <<", se pasa por el punto: (" << x << "," << y << ")" << endl;
-                cout << pasos << endl;
+                pasos++;
+                //cout << pasos << endl;
                 return 1;
         } else {
             labArray[x][y] = HUECO;
-            pasos--;
+            //pasos--;
             return 0;
         }
     }
@@ -130,13 +123,13 @@ int main (char argc, char * argv[]) {
 
     juega(laberinto);
 
-    /* SACAR LABERINTO POR PANTALLA
+    ///* SACAR LABERINTO POR PANTALLA
     for (int i=0; i<M; i++){
         for (int j=0; j<N; j++){
             cout << laberinto[i][j];
         }
         cout << endl;
-    }*/
+    }
     
 
    return 0;
