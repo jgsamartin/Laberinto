@@ -61,6 +61,7 @@ int esFinal (char labArray[M][N], int x, int y) {
 int mueve (char labArray[M][N], int x, int y) {
 
     if (esFinal(labArray,x,y)) {
+        cout << pasos << endl;
         return 1; 
     }
     else if (!esAccesible(labArray,x,y) ) {
@@ -77,7 +78,6 @@ int mueve (char labArray[M][N], int x, int y) {
             mueve(labArray, x, y-1)) {
                 //cout << "En la posición número" << pasos <<", se pasa por el punto: (" << x << "," << y << ")" << endl;
                 pasos++;
-                cout << pasos << endl;
                 return 1;
         } else {
             labArray[x][y] = HUECO;
@@ -91,8 +91,19 @@ int mueve (char labArray[M][N], int x, int y) {
     Función que resuelve el laberinto
 */
 int juega (char labArray[M][N]) {
-    int inicio[2] = {21, 0};
-    int fin[2] = {5, 99};
+
+    int m = 0, inicio[2], fin[2];
+    inicio[1] = 0;
+    fin[1] = N-1;
+    
+    while(m<M){
+        if (labArray[m][inicio[1]] == INICIO) inicio[0] = m;
+        if (labArray[m][fin[1]] == FIN) fin[0] = m;
+        m++;
+    }
+
+    cout << "Inicio : " << inicio[0]+1 << "," << inicio[1]+1 << endl;
+    cout << "Fin : " << fin[0]+1 << "," << fin[1]+1 << endl;
 
     int i = inicio[0];
     int j = inicio[1];
@@ -131,7 +142,6 @@ int main (char argc, char * argv[]) {
         cout << endl;
     }
     
-
    return 0;
 
 }
