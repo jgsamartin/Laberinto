@@ -77,7 +77,7 @@ int mueve (char labArray[M][N], int x, int y) {
             mueve(labArray, x, y-1)) {
                 //cout << "En la posición número" << pasos <<", se pasa por el punto: (" << x << "," << y << ")" << endl;
                 pasos++;
-                //cout << pasos << endl;
+                cout << pasos << endl;
                 return 1;
         } else {
             labArray[x][y] = HUECO;
