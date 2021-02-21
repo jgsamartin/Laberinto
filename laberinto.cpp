@@ -12,8 +12,11 @@ using namespace std;
 # define FIN 'O'         // Carácter de fin
 # define CAMINO 'C'      // Carácter para indicar si se ha pasado por ahí
 # define HUECO ' '       // Carácter para indicar que esa casilla tiene un hueco (se puede pasar por ella)
+# define DIM 2           // Número de dimensiones del juego
 
 int pasos = 0;
+int nThreads = 0;
+int pasosTotales = 0;
 
 /*
     Función para leer el archivo txt 
@@ -42,47 +45,56 @@ void cargaLaberinto (char *labFile, char labArray[M][N]) {
 /*
     Función que comprueba si la casilla seleccionada es o no accesible
 */
-int esAccesible (char labArray[M][N], int x, int y) {
-    int n = 100;
-    int m = 25;
-    return labArray[x][y] != ROCA && labArray[x][y] != CAMINO && x >= 0 && y >= 0 && x < m && y < n;
+inline int esAccesible (char labArray[M][N], int x, int y) {
+    return labArray[x][y] != ROCA && labArray[x][y] != CAMINO && x >= 0 && y >= 0 && x < M && y < N;
 }
 
 /*
     Función que comprueba si la casilla seleccionada es o no el final
 */
-int esFinal (char labArray[M][N], int x, int y) {
+inline int esFinal (char labArray[M][N], int x, int y) {
     return labArray[x][y] == FIN;
 }
 
 /*
     Se mueve desde la posición (x,y) a todas las casillas adyacentes posibles
 */
-int mueve (char labArray[M][N], int x, int y) {
-
+void mueve (char labArray[M][N], int x, int y, int* success) {
+    
     if (esFinal(labArray,x,y)) {
-        cout << pasos << endl;
-        return 1; 
+        pasos++;
+        *success = 1; 
     }
     else if (!esAccesible(labArray,x,y) ) {
-        return 0;
+        *success = 0;
     } 
     else {
         // --- Marcamos que hemos pasado por la casilla
         labArray[x][y] = CAMINO;
 
+        // --- Nos metemos recursivamente en alguna de las cuatro casillas adyacentes
+        thread threads[2*DIM];
+        int r1, r2, r3, r4;
+        threads[0] = thread (mueve, labArray, x+1, y, &r1);
+        threads[1] = thread (mueve, labArray, x, y+1, &r2);
+        threads[2] = thread (mueve, labArray, x-1, y, &r3);
+        threads[3] = thread (mueve, labArray, x, y-1, &r4);
+
+        pasosTotales++;
+        nThreads += 4;
+
+        // --- Juntamos tods los threads
+        for (int i = 0; i<2*DIM; i++) {
+            threads[i].join();
+        }
+
         // --- Si alguna de las casillas está en el camino de salida, hemos acertado
-        if (mueve(labArray, x+1, y) ||
-            mueve(labArray, x, y+1) ||
-            mueve(labArray, x-1, y) ||
-            mueve(labArray, x, y-1)) {
-                //cout << "En la posición número" << pasos <<", se pasa por el punto: (" << x << "," << y << ")" << endl;
+        if (r1 || r2 || r3 || r4) {
                 pasos++;
-                return 1;
+                *success = 1;
         } else {
             labArray[x][y] = HUECO;
-            //pasos--;
-            return 0;
+            *success = 0;
         }
     }
 }
@@ -96,6 +108,7 @@ int juega (char labArray[M][N]) {
     inicio[1] = 0;
     fin[1] = N-1;
     
+    // --- Busca la posición inicial
     while(m<M){
         if (labArray[m][inicio[1]] == INICIO) inicio[0] = m;
         if (labArray[m][fin[1]] == FIN) fin[0] = m;
@@ -105,21 +118,26 @@ int juega (char labArray[M][N]) {
     cout << "Inicio : " << inicio[0]+1 << "," << inicio[1]+1 << endl;
     cout << "Fin : " << fin[0]+1 << "," << fin[1]+1 << endl;
 
+    cout << "Coordenada inicial : " << inicio[0]+1 << "," << inicio[1]+1 << endl;
+    cout << "Coordenada final : " << fin[0]+1 << "," << fin[1]+1 << endl;
+
     int i = inicio[0];
     int j = inicio[1];
 
+    // --- Para imprimir "Victoria" o "Derrota"
+    //string estados[2] = {"Derrota", "Victoria"};
+    int result = 0;
+
     // --- Desde la posición inicial, se mueve
-    if(mueve (labArray,i,j)) {
-        cout << "Victoria" << endl;
-        return 1;
-    } else {
-        cout << "Derrota" << endl;
-        return 0;
-    }
+    mueve (labArray,i,j, &result);
+
+    // --- Imprimir resultado por pantalla
+    //cout << estados[result] << endl;
+    return result;
 }
 
 /* Main */
-int main (char argc, char * argv[]) {
+int main (int argc, char * argv[]) {
     /* Matriz que almacena el laberinto */
     char laberinto[M][N];
 
@@ -134,13 +152,17 @@ int main (char argc, char * argv[]) {
 
     juega(laberinto);
 
-    ///* SACAR LABERINTO POR PANTALLA
+    cout << "Número total de pasos recorridos : "<< pasosTotales << endl;
+    cout << "Número de hilos creados : "<< nThreads << endl;
+    cout << "Número mínimo de pasos : "<< pasos << endl;
+
+    /* SACAR LABERINTO POR PANTALLA
     for (int i=0; i<M; i++){
         for (int j=0; j<N; j++){
             cout << laberinto[i][j];
         }
         cout << endl;
-    }
+    }*/
     
    return 0;
 
