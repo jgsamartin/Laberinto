@@ -73,18 +73,59 @@ void mueve (char labArray[M][N], int x, int y, int* success) {
         labArray[x][y] = CAMINO;
 
         // --- Nos metemos recursivamente en alguna de las cuatro casillas adyacentes
-        thread threads[2*DIM];
+        thread threads[2*DIM-2];
         int r1, r2, r3, r4;
-        threads[0] = thread (mueve, labArray, x+1, y, &r1);
-        threads[1] = thread (mueve, labArray, x, y+1, &r2);
-        threads[2] = thread (mueve, labArray, x-1, y, &r3);
-        threads[3] = thread (mueve, labArray, x, y-1, &r4);
+        int nT = 0;
+        
+        // Creación de hilos y recursividad SOLO en bi o trifurcaciones
+        if (esAccesible(labArray,x+1,y)) {
+            mueve (labArray, x+1, y, &r1);
+            if (esAccesible(labArray,x,y+1)) {
+                threads[nT] = thread (mueve, labArray, x, y+1, &r2);
+                nThreads++;
+                nT++;
+            }
+            else if (esAccesible(labArray,x-1,y)) {
+                threads[nT] = thread (mueve, labArray, x-1, y, &r3);
+                nThreads++;
+                nT++;
+            }
+            else if (esAccesible(labArray,x,y-1)) {
+                threads[nT] = thread (mueve, labArray, x, y-1, &r4);
+                nThreads++;
+                nT++;
+            }
+        }
+        
+        else if (esAccesible(labArray,x,y+1)) {
+            mueve (labArray, x, y+1, &r2);
+            if (esAccesible(labArray,x-1,y)) {
+                threads[nT] = thread (mueve, labArray, x-1, y, &r3);
+                nThreads++;
+                nT++;
+            }
+            else if (esAccesible(labArray,x,y-1)) {
+                threads[nT] = thread (mueve, labArray, x, y-1, &r4);
+                nThreads++;
+                nT++;
+            }
+        }
+        
+        else if (esAccesible(labArray,x-1,y)) {
+            mueve (labArray, x-1, y, &r3);
+            if (esAccesible(labArray,x,y-1)) {
+                threads[nT] = thread (mueve, labArray, x, y-1, &r4);
+                nThreads++;
+                nT++;
+            }
+        }
+        
+        else if (esAccesible(labArray,x,y-1)) mueve (labArray, x, y-1, &r4);
 
         pasosTotales++;
-        nThreads += 4;
 
         // --- Juntamos tods los threads
-        for (int i = 0; i<2*DIM; i++) {
+        for (int i = 0; i<nT; i++) {
             threads[i].join();
         }
 
