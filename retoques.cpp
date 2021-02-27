@@ -10,7 +10,6 @@
 # define FIN 'O'
 # define CAMINO 'C' // Relleno del camino a seguir
 # define HUECO ' '  // Espacio libre o accesible en el laberinto
-# define DIM 2      // Número de dimensiones del juego
 
 using namespace std;
 
@@ -72,7 +71,7 @@ void mueve (char labArray[M][N], int x, int y, int* success, int nHilo) {
         
         // Creación de hilos y recursividad SOLO en bi o trifurcaciones
         if (esAccesible(labArray,x+1,y)) {
-            mueve (labArray, x+1, y, &s1, 9);
+            mueve (labArray, x+1, y, &s1, nHilo);
             if (esAccesible(labArray,x,y+1)) {
                 threads[nT] = thread (mueve, labArray, x, y+1, &s2, nThreads);
                 start[nThreads]=x;
@@ -97,7 +96,7 @@ void mueve (char labArray[M][N], int x, int y, int* success, int nHilo) {
         }
         
         else if (esAccesible(labArray,x,y+1)) {
-            mueve (labArray, x, y+1, &s2, 9);
+            mueve (labArray, x, y+1, &s2, nHilo);
             if (esAccesible(labArray,x-1,y)) {
                 threads[nT] = thread (mueve, labArray, x-1, y, &s3, nThreads);
                 start[nThreads]=x-1;
@@ -115,7 +114,7 @@ void mueve (char labArray[M][N], int x, int y, int* success, int nHilo) {
         }
         
         else if (esAccesible(labArray,x-1,y)) {
-            mueve (labArray, x-1, y, &s3, 9);
+            mueve (labArray, x-1, y, &s3, nHilo);
             if (esAccesible(labArray,x,y-1)) {
                 threads[nT] = thread (mueve, labArray, x, y-1, &s4, nThreads);
                 start[nThreads]=x;
@@ -125,7 +124,7 @@ void mueve (char labArray[M][N], int x, int y, int* success, int nHilo) {
             }
         }
         
-        else if (esAccesible(labArray,x,y-1)) mueve (labArray, x, y-1, &s4, 9);
+        else if (esAccesible(labArray,x,y-1)) mueve (labArray, x, y-1, &s4, nHilo);
 
         for (int i = 0; i<nT; i++) { // Destrucción (join) de threads
             endPos[2*i]=x;
@@ -177,10 +176,17 @@ int main (int argc, char * argv[]) {
 
     juega(laberinto);
 
+    for (int i=0; i<M; i++){
+        for (int j=0; j<N; j++){
+            cout << laberinto[i][j];
+        }
+        cout << endl;
+    }
+
     cout << "In coordinates : " << inicio[0]+1 << "," << inicio[1]+1 << endl;
     cout << "Out coordinates : " << fin[0]+1 << "," << fin[1]+1 << endl;
     cout << "Número de hilos creados : "<< nThreads << endl;
-    for (int i = 0; i<nThreads; i++) cout << "Hilo " << i+1 << " :: start position:" << start[2*i] << "," << start[2*i+1] << " end position:" << endPos[2*i] << "," << endPos[2*i+1]<< " no.steps:" << pasos[i] << endl;
+    for (int i = 0; i<nThreads; i++) cout << "Hilo " << i+1 << " :: start position:" << start[2*i]+1 << "," << start[2*i+1]+1 << " end position:" << endPos[2*i]+1 << "," << endPos[2*i+1]+1 << " no.steps:" << pasos[i] << endl;
     cout << "Número mínimo de pasos : "<< minPasos << endl;
 
    return 0;
