@@ -63,6 +63,7 @@ void mueve (char labArray[M][N], int x, int y, int* success) {
     
     if (esFinal(labArray,x,y)) {
         pasos++;
+        cout << "Final" << endl;
         *success = 1; 
     }
     else if (!esAccesible(labArray,x,y) ) {
@@ -77,6 +78,8 @@ void mueve (char labArray[M][N], int x, int y, int* success) {
         int r1, r2, r3, r4;
         int nT = 0;
         
+        cout << x << y << ":" << esAccesible(labArray,x,y+1) << endl;
+
         // Creación de hilos y recursividad SOLO en bi o trifurcaciones
         if (esAccesible(labArray,x+1,y)) {
             mueve (labArray, x+1, y, &r1);
@@ -97,7 +100,7 @@ void mueve (char labArray[M][N], int x, int y, int* success) {
             }
         }
         
-        else if (esAccesible(labArray,x,y+1)) {
+        if (esAccesible(labArray,x,y+1)) {
             mueve (labArray, x, y+1, &r2);
             if (esAccesible(labArray,x-1,y)) {
                 threads[nT] = thread (mueve, labArray, x-1, y, &r3);
@@ -111,7 +114,7 @@ void mueve (char labArray[M][N], int x, int y, int* success) {
             }
         }
         
-        else if (esAccesible(labArray,x-1,y)) {
+        if (esAccesible(labArray,x-1,y)) {
             mueve (labArray, x-1, y, &r3);
             if (esAccesible(labArray,x,y-1)) {
                 threads[nT] = thread (mueve, labArray, x, y-1, &r4);
@@ -156,6 +159,16 @@ int juega (char labArray[M][N]) {
         m++;
     }
 
+
+
+
+    inicio[0] = 14;
+    inicio[1] = 80;
+
+
+
+
+
     cout << "Inicio : " << inicio[0]+1 << "," << inicio[1]+1 << endl;
     cout << "Fin : " << fin[0]+1 << "," << fin[1]+1 << endl;
 
@@ -166,14 +179,12 @@ int juega (char labArray[M][N]) {
     int j = inicio[1];
 
     // --- Para imprimir "Victoria" o "Derrota"
-    //string estados[2] = {"Derrota", "Victoria"};
     int result = 0;
 
     // --- Desde la posición inicial, se mueve
     mueve (labArray,i,j, &result);
 
     // --- Imprimir resultado por pantalla
-    //cout << estados[result] << endl;
     return result;
 }
 
@@ -197,13 +208,14 @@ int main (int argc, char * argv[]) {
     cout << "Número de hilos creados : "<< nThreads << endl;
     cout << "Número mínimo de pasos : "<< pasos << endl;
 
-    /* SACAR LABERINTO POR PANTALLA
+    ///* SACAR LABERINTO POR PANTALLA
     for (int i=0; i<M; i++){
         for (int j=0; j<N; j++){
             cout << laberinto[i][j];
         }
         cout << endl;
-    }*/
+    }
+    ///*
     
    return 0;
 

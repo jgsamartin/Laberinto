@@ -56,7 +56,9 @@ void mueve (char labArray[M][N], int x, int y, int* success, int nHilo) {
     
     if (esFinal(labArray,x,y)) {
         minPasos++;
-        *success = 1; 
+        *success = 1;
+        endPos[2*nHilo]=x;
+        endPos[2*nHilo+1]=y;
     }
     else if (!esAccesible(labArray,x,y)) {
         *success = 0;
@@ -66,7 +68,7 @@ void mueve (char labArray[M][N], int x, int y, int* success, int nHilo) {
         pasos[nHilo]++;
 
         thread threads[2];  // Vector de 2 hilos (máximo de hilos creados en trifurcaciones)
-        int s1, s2, s3, s4;
+        int s1 = 0, s2 = 0, s3 = 0, s4 = 0;
         int nT = 0; // número de hilos en una sola bi o trifurcación
         
         // Creación de hilos y recursividad SOLO en bi o trifurcaciones
@@ -74,22 +76,22 @@ void mueve (char labArray[M][N], int x, int y, int* success, int nHilo) {
             mueve (labArray, x+1, y, &s1, nHilo);
             if (esAccesible(labArray,x,y+1)) {
                 threads[nT] = thread (mueve, labArray, x, y+1, &s2, nThreads);
-                start[nThreads]=x;
-                start[nThreads+1]=y+1;
+                start[2*nThreads]=x;
+                start[2*nThreads+1]=y+1;
                 nThreads++;
                 nT++;
             }
-            else if (esAccesible(labArray,x-1,y)) {
+            if (esAccesible(labArray,x-1,y)) {
                 threads[nT] = thread (mueve, labArray, x-1, y, &s3, nThreads);
-                start[nThreads]=x-1;
-                start[nThreads+1]=y;                
+                start[2*nThreads]=x-1;
+                start[2*nThreads+1]=y;                
                 nThreads++;
                 nT++;
             }
-            else if (esAccesible(labArray,x,y-1)) {
+            if (esAccesible(labArray,x,y-1)) {
                 threads[nT] = thread (mueve, labArray, x, y-1, &s4, nThreads);
-                start[nThreads]=x;
-                start[nThreads+1]=y-1;                
+                start[2*nThreads]=x;
+                start[2*nThreads+1]=y-1;                
                 nThreads++;
                 nT++;
             }
@@ -99,15 +101,15 @@ void mueve (char labArray[M][N], int x, int y, int* success, int nHilo) {
             mueve (labArray, x, y+1, &s2, nHilo);
             if (esAccesible(labArray,x-1,y)) {
                 threads[nT] = thread (mueve, labArray, x-1, y, &s3, nThreads);
-                start[nThreads]=x-1;
-                start[nThreads+1]=y;                
+                start[2*nThreads]=x-1;
+                start[2*nThreads+1]=y;                
                 nThreads++;
                 nT++;
             }
-            else if (esAccesible(labArray,x,y-1)) {
+            if (esAccesible(labArray,x,y-1)) {
                 threads[nT] = thread (mueve, labArray, x, y-1, &s4, nThreads);
-                start[nThreads]=x;
-                start[nThreads+1]=y-1;                
+                start[2*nThreads]=x;
+                start[2*nThreads+1]=y-1;                
                 nThreads++;
                 nT++;
             }
@@ -117,8 +119,8 @@ void mueve (char labArray[M][N], int x, int y, int* success, int nHilo) {
             mueve (labArray, x-1, y, &s3, nHilo);
             if (esAccesible(labArray,x,y-1)) {
                 threads[nT] = thread (mueve, labArray, x, y-1, &s4, nThreads);
-                start[nThreads]=x;
-                start[nThreads+1]=y-1;                
+                start[2*nThreads]=x;
+                start[2*nThreads+1]=y-1;                
                 nThreads++;
                 nT++;
             }
@@ -126,9 +128,12 @@ void mueve (char labArray[M][N], int x, int y, int* success, int nHilo) {
         
         else if (esAccesible(labArray,x,y-1)) mueve (labArray, x, y-1, &s4, nHilo);
 
+        else { 
+            endPos[2*nHilo]=x;
+            endPos[2*nHilo+1]=y;
+        }
+
         for (int i = 0; i<nT; i++) { // Destrucción (join) de threads
-            endPos[2*i]=x;
-            endPos[2*i+1]=y;
             threads[i].join();
         }
 
@@ -182,6 +187,8 @@ int main (int argc, char * argv[]) {
         }
         cout << endl;
     }
+
+    cout << endl;
 
     cout << "In coordinates : " << inicio[0]+1 << "," << inicio[1]+1 << endl;
     cout << "Out coordinates : " << fin[0]+1 << "," << fin[1]+1 << endl;
